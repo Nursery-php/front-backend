@@ -2,16 +2,12 @@
 include("./navbar.php");
 include("./sidebar.php");
 include("db.php");
-
-// Handle adding a new plant
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-plant"])) {
     $categoryId = mysqli_real_escape_string($conn, $_POST["category_id"]);
     $plantName = mysqli_real_escape_string($conn, $_POST["plant-name"]);
     $description = mysqli_real_escape_string($conn, $_POST["description"]);
     $price = mysqli_real_escape_string($conn, $_POST["price"]);
     $discountedPrice = mysqli_real_escape_string($conn, $_POST["discounted_price"]);
-
-    // Handle image upload
     $targetDirectory = "../uploads/";
     $targetFile = $targetDirectory . basename($_FILES["image"]["name"]);
     $uploadOk = 1;
@@ -25,33 +21,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-plant"])) {
             $uploadOk = 0;
         }
     }
-
-    // Check if the file already exists
     if (file_exists($targetFile)) {
         echo '<script>alert("Sorry, file already exists.");</script>';
         $uploadOk = 0;
     }
-
-    // Check file size
     if ($_FILES["image"]["size"] > 500000) {
         echo '<script>alert("Sorry, your file is too large.");</script>';
         $uploadOk = 0;
     }
-
-    // Allow only certain file formats
     $allowedFormats = array("jpg", "jpeg", "png", "gif");
     if (!in_array($imageFileType, $allowedFormats)) {
         echo '<script>alert("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");</script>';
         $uploadOk = 0;
     }
-
-    // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
         echo '<script>alert("Sorry, your file was not uploaded.");</script>';
     } else {
-        // If everything is ok, try to upload file
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            // Insert plant data into the database
             $imagePath = $targetFile;
             $insertPlantQuery = "INSERT INTO plants (category_id, name, description, price, image_url, discounted_price)
                                 VALUES ('$categoryId', '$plantName', '$description', '$price', '$imagePath', '$discountedPrice')";
@@ -73,12 +59,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-plant"])) {
 <html lang="en">
 
 <head>
-    <!-- ... (head content) -->
 </head>
 
 <body class="bg-[#ECECF8]">
     <?php
-    // Fetch categories to populate the category dropdown in the form
     $categoriesQuery = "SELECT id, name FROM categories";
     $categoriesResult = mysqli_query($conn, $categoriesQuery);
     ?>
@@ -99,10 +83,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-plant"])) {
 
     <body class="bg-[#ECECF8]">
         <?php
-    // Fetch categories to populate the category dropdown in the form
-    $categoriesQuery = "SELECT id, name FROM categories";
-    $categoriesResult = mysqli_query($conn, $categoriesQuery);
-    ?>
+        $categoriesQuery = "SELECT id, name FROM categories";
+        $categoriesResult = mysqli_query($conn, $categoriesQuery);
+        ?>
 
         <div class="p-5 mt-14 sm:ml-64">
             <h2 class="text-xl font-semibold mb-2">Add New Plant</h2>
@@ -112,10 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add-plant"])) {
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required>
                     <?php
-                while ($category = mysqli_fetch_assoc($categoriesResult)) {
-                    echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
-                }
-                ?>
+                    while ($category = mysqli_fetch_assoc($categoriesResult)) {
+                        echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+                    }
+                    ?>
                 </select>
 
                 <label for="plant-name" class="sr-only">Plant Name</label>
